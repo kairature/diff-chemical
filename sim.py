@@ -1,57 +1,59 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Mar  2 11:11:58 2022
+##
+##
+## Modelling 1A: Failing chemical reactions simulation.
+## Made by Frank van der Top and Timothy van der Valk
+##
+##
 
-@author: FvTop
-"""
 import math as m
 import numpy as np
 import matplotlib.pyplot as plt
 
-dt = 0.01
-end = 30.0
-tf=10
-
-def simulate_supplied():
-    n = int(round(end / dt))
+def simulate_chemical_process(__dt, __end, __tf):
+    """ 
+    Simulate the chemical process described by the differential equations.
+    Return a tuple of the lists of concentrations for U and V, and a list
+    """ 
+    n = int(round(__end / __dt))
     a = 2.0
     b = 4.5
 
     u_list = np.zeros(n + 1)
     v_list = np.zeros(n + 1)
+    t_list = np.zeros(n + 1)
     u_list[0] = 0
     v_list[0] = 0
-    
-    t_list = np.zeros(n + 1)
     for i in range(n+1):
-        t_list[i] = dt * i
+        t_list[i] = __dt * i
 
     for i in range(1, n + 1):
         u = u_list[i - 1]
         v = v_list[i - 1]
         t = t_list[i - 1]
-        du=0
-        if t<=tf or True:
+
+        # Start reducing supply of A if t > tf.
+        du = 0
+        if t <= __tf:
             du = a - b * u + u**2 * v - u
         else: 
-            du = 2*m.exp(-t) - b*u + u**2 * v - u
-        
+            du = a * m.exp(-(t - __tf)) - b * u + u**2 * v - u
         dv = b * u - u**2 * v
-        u += dt * du
-        v += dt * dv
 
+        # Compute new values and store.
+        u += __dt * du
+        v += __dt * dv
         u_list[i] = u
         v_list[i] = v
 
     return (u_list, v_list, t_list)
 
-u_list, v_list, t_list = simulate_supplied()
+(u_list, v_list, t_list) = simulate_chemical_process(0.01, 30.0, 15)
 
 plt.figure("concentration U and V")
 plt.plot(t_list, u_list)
 plt.plot(t_list, v_list)
 plt.xlabel('time in t')
-plt.ylabel("concentratoin in mol")
+plt.ylabel("concentration in mol")
 
 plt.figure('the spiral')
 plt.plot(u_list, v_list)
