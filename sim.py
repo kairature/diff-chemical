@@ -9,20 +9,20 @@ import math as m
 import numpy as np
 import matplotlib.pyplot as plt
 
-def simulate_chemical_process(__dt, __end, __tf):
+def simulate_chemical_process(__a0, __b0, __u0, __v0, __tf, __tend, __dt):
     """ 
     Simulate the chemical process described by the differential equations.
     Return a tuple of the lists of concentrations for U and V, and a list
     """ 
-    n = int(round(__end / __dt))
-    a = 2.0
-    b = 4.5
+    n = int(round(__tend / __dt))
+    a = __a0
+    b = __b0
 
     u_list = np.zeros(n + 1)
     v_list = np.zeros(n + 1)
     t_list = np.zeros(n + 1)
-    u_list[0] = 0
-    v_list[0] = 0
+    u_list[0] = __u0
+    v_list[0] = __v0
     for i in range(n+1):
         t_list[i] = __dt * i
 
@@ -47,7 +47,7 @@ def simulate_chemical_process(__dt, __end, __tf):
 
     return (u_list, v_list, t_list)
 
-(u_list, v_list, t_list) = simulate_chemical_process(0.01, 30.0, 15)
+(u_list, v_list, t_list) = simulate_chemical_process(2.0, 4.5, 0, 0, 15.0, 30.0, 0.01)
 
 plt.figure("concentration U and V")
 plt.plot(t_list, u_list)
