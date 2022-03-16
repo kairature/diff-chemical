@@ -49,7 +49,7 @@ def simulate_chemical_process(__a0, __b0, __u0, __v0, __tf, __tend, __dt):
     return (u_list, v_list, t_list)
 
 
-def spiral_graph(__maxn, __tend, __dt):
+def spiral_graph(__maxn, __tend, __dt, __tfstart):
     """
     Plot __maxn graphs with tf between 0 and __tend. Print the highest value for V
     with the corresponding tf.
@@ -62,7 +62,7 @@ def spiral_graph(__maxn, __tend, __dt):
     max_tf = 0
     max_v = 0
     for i in range(__maxn):
-        tf = __tend * (float(i) / float(__maxn))
+        tf = __tfstart + __tend * (float(i) / float(__maxn))
         (u_list, v_list, t_list) = simulate_chemical_process(2.0, 4.5, 0, 0, tf, __tend, __dt)
         plt.plot(u_list, v_list)
     
@@ -102,8 +102,31 @@ def time_graph(__maxn, __tend, __dt):
 
 
 def list_graph(__tf, __tend, __dt):
+    """
+    Print a list of the values T | U V for given simulation.
+    """
     u_list, v_list, t_list = simulate_chemical_process(2.0, 4.5, 0, 0, __tf, __tend, __dt)
     for i in range(len(t_list)):
         print("{:2.2f}|  {:e}  {:e}".format(t_list[i], u_list[i], v_list[i]))
 
-spiral_graph(100, 30.0, 0.1)
+
+def determine_optimal_dt():
+    tf = 1.0
+    tcompare = 2.0
+    error_margin = 0.0001
+
+    # Perform high accuracy simulation.
+
+    dt = 0.2
+    for i in range(100):
+        dt = 0.2 / (2 ** i)
+
+        # dt simulation.
+        u_high, v_high, t_high = simulate_chemical_process(2.0, 4.5, 0, 0, tf, tcompare, dt)
+        # 2 * dt simulation.
+        u_low , v_low, t_low = simulate_chemical_process(2.0, 4.5, 0, 0, tf, tcompare, 2 * dt)
+  
+        err = abs(v_high[-1] - v_low[-1])
+        if err < error_margin:
+            print("The optimal dt is {:e} with i = {:d}. This is 0.2 / 2^{:d}".format(dt, i, i))
+            break
