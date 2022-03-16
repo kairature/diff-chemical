@@ -9,6 +9,7 @@ import math as m
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def simulate_chemical_process(__a0, __b0, __u0, __v0, __tf, __tend, __dt):
     """ 
     Simulate the chemical process described by the differential equations.
@@ -36,7 +37,7 @@ def simulate_chemical_process(__a0, __b0, __u0, __v0, __tf, __tend, __dt):
         if t <= __tf:
             du = a - b * u + u**2 * v - u
         else: 
-            du = a * m.exp(-(t - __tf)) - b * u + u**2 * v - u
+            du = a * m.exp(-(t - 0 * __tf)) - b * u + u**2 * v - u
         dv = b * u - u**2 * v
 
         # Compute new values and store.
@@ -47,17 +48,57 @@ def simulate_chemical_process(__a0, __b0, __u0, __v0, __tf, __tend, __dt):
 
     return (u_list, v_list, t_list)
 
-(u_list, v_list, t_list) = simulate_chemical_process(2.0, 4.5, 0, 0, 15.0, 30.0, 0.01)
 
-plt.figure("concentration U and V")
-plt.plot(t_list, u_list)
-plt.plot(t_list, v_list)
-plt.xlabel('time in t')
-plt.ylabel("concentration in mol")
+def spiral_graph(__maxn, __tend, __dt):
+    """
+    Plot __maxn graphs with tf between 0 and __tend. Print the highest value for V
+    with the corresponding tf.
+    """
+    plt.figure("Spiral Graph")
+    plt.xlabel('U')
+    plt.ylabel('V')
 
-plt.figure('the spiral')
-plt.plot(u_list, v_list)
-#plt.axis([-10,10, 0, 5])
-plt.xlabel('u')
-plt.ylabel('y')
-plt.show()
+    # Keep track of highest final value for V.
+    max_tf = 0
+    max_v = 0
+    for i in range(__maxn):
+        tf = __tend * (float(i) / float(__maxn))
+        (u_list, v_list, t_list) = simulate_chemical_process(2.0, 4.5, 0, 0, tf, __tend, __dt)
+        plt.plot(u_list, v_list)
+    
+        maxv = max(v_list) 
+        if maxv > max_v:
+            max_v = maxv
+            max_tf = tf
+
+    plt.title("{:d} graphs with tf in [ 0, {:.2f} ]. Max V = {:.2f}, TF = {:.2f}".format(__maxn, __tend, max_v, max_tf))
+    plt.show()
+
+
+def time_graph(__maxn, __tend, __dt):
+    """
+    Plot __maxn graphs with tf between 0 and __tend. Print the highest value for V
+    with the corresponding tf.
+    """
+    plt.figure("Time Graph")
+    plt.xlabel('Time (seconds)')
+    plt.ylabel('Concentration (mol)')
+
+    # Keep track of highest final value for V.
+    max_tf = 0
+    max_v = 0
+    for i in range(__maxn):
+        tf = __tend * (float(i) / float(__maxn))
+        (u_list, v_list, t_list) = simulate_chemical_process(2.0, 4.5, 0, 0, tf, __tend, __dt)
+        plt.plot(t_list, v_list)
+    
+        maxv = max(v_list) 
+        if maxv > max_v:
+            max_v = maxv
+            max_tf = tf
+
+    plt.title("{:d} graphs with tf between [ 0, {:.2f} ]. Max V = {:.2f}, TF = {:.2f}".format(__maxn, __tend, max_v, max_tf))
+    plt.show()
+
+
+spiral_graph(100, 30.0, 0.01)
