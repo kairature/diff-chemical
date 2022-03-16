@@ -37,7 +37,7 @@ def simulate_chemical_process(__a0, __b0, __u0, __v0, __tf, __tend, __dt):
         if t <= __tf:
             du = a - b * u + u**2 * v - u
         else: 
-            du = a * m.exp(-(t - 0 * __tf)) - b * u + u**2 * v - u
+            du = a * m.exp(-(t - __tf)) - b * u + u**2 * v - u
         dv = b * u - u**2 * v
 
         # Compute new values and store.
@@ -101,4 +101,9 @@ def time_graph(__maxn, __tend, __dt):
     plt.show()
 
 
-spiral_graph(100, 30.0, 0.01)
+def list_graph(__tf, __tend, __dt):
+    u_list, v_list, t_list = simulate_chemical_process(2.0, 4.5, 0, 0, __tf, __tend, __dt)
+    for i in range(len(t_list)):
+        print("{:2.2f}|  {:e}  {:e}".format(t_list[i], u_list[i], v_list[i]))
+
+spiral_graph(100, 30.0, 0.1)
