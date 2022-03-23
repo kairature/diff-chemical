@@ -170,26 +170,36 @@ def plot_vector_field(__t, __tf):
     plt.quiver(xli, yli, duli, dvli)
 
 
-def plot_end_v(__tfstart, __tfend, ):
+def compute_end_v(__tf):
     dt = 0.01
-    tend = 10.0
-    tflist = [] 
-    vlist = []
+    tend = 30.0
+    u_sim, v_sim, t_sim = simulate_chemical_process(0, 0, __tf, 30.0, 0.01)
+    return v_sim[-1]
 
-    n = int(round((__tfend - __tfstart) / dt))
-    for i in range(n):
-        print("SIM " + str(i))
-        tf = __tfstart + (i / n) * (__tfend - __tfstart)
-        u_sim, v_sim, t_sim = simulate_chemical_process(0, 0, tf, tend, dt)
-        vend = v_sim[-1]
-        tflist.append(tf)
-        vlist.append(vend)
 
-    plt.figure("Final V as function of TF")
+def plot_end_v(__tfstart, __tfend, ):
+    tflist = np.linspace(__tfstart, __tfend, 100)
+
+    xl = [] 
+    yl = []
+    for tf in tflist:
+        endv = compute_end_v(tf)
+        xl.append(tf)
+        yl.append(endv)
+
+    maxy = yl[0]
+    maxi = 0
+    for i in range(len(yl)):
+        if yl[i] > maxy:
+            maxy = yl[i]
+            maxi = i
+
+    plt.figure("Final V as function of TF.")
+    plt.title("Max ({:e}, {:e})".format(xl[maxi], yl[maxi]))
     plt.xlabel('TF (seconds)')
     plt.ylabel('Concentration V (in mol)')
-    plt.plot(tflist, vlist)
-    plt.show() 
+    plt.plot(xl, yl)
+    plt.show()
 
 
-plot_end_v(2, 4)
+plot_end_v(3.31, 3.314)
