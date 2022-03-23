@@ -171,10 +171,55 @@ def plot_vector_field(__t, __tf):
 
 
 def compute_end_v(__tf):
-    dt = 0.01
+    dt = 2.0 / (2.0 ** -11)
     tend = 30.0
     u_sim, v_sim, t_sim = simulate_chemical_process(0, 0, __tf, 30.0, 0.01)
     return v_sim[-1]
+
+
+def approach_peak(__tfstart, __tfend):
+    """
+    Approach the peak and return tuple of X and Y.
+    """
+
+    error = 0.00000000000000001
+    dt =    0.0000001
+
+    a = __tfstart
+    b = __tfend
+
+    xl = []
+    yl = []
+    for i in range(1000):
+        print(i)
+        # Compute next sampling point.
+        p = (a + b) / 2.0
+        endv_p = compute_end_v(p)
+
+        xl.append(p)
+        yl.append(endv_p)
+
+        # Sample the point next to this one to determine whether we are
+        # on the left or right side of the peak.
+        endv_step = compute_end_v(p + dt)
+
+        # If the difference between these points is less than error, then we are done.
+        if abs(endv_p - endv_step) < error:
+            print(endv_p, endv_step)
+            return (p, endv_p)
+
+        # We are on the RIGHT side of the peak. 
+        if endv_p > endv_step:
+            b = p
+
+        # We are on the LEFT side of the peak.
+        else:
+            a = p
+
+        # Now continue.
+        pass
+
+    return (0, 0)
 
 
 def plot_end_v(__tfstart, __tfend, ):
@@ -194,12 +239,11 @@ def plot_end_v(__tfstart, __tfend, ):
             maxy = yl[i]
             maxi = i
 
-    plt.figure("Final V as function of TF.")
-    plt.title("Max ({:e}, {:e})".format(xl[maxi], yl[maxi]))
-    plt.xlabel('TF (seconds)')
-    plt.ylabel('Concentration V (in mol)')
+#    plt.title("Max ({:e}, {:e})".format(xl[maxi], yl[maxi]))
+    #plt.xlabel('TF (seconds)')
+    #plt.ylabel('Concentration V (in mol)')
     plt.plot(xl, yl)
-    plt.show()
 
 
-plot_end_v(3.31, 3.314)
+(x, y) = approach_peak(3, 4)
+print(x, y)
